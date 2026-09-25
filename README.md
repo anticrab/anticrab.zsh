@@ -104,6 +104,7 @@ panes. bash kept 1000 in memory and wrote them only at exit, which is why
 | Key | Does |
 | --- | --- |
 | `Tab` | completion menu; arrows or `Tab`/`Shift-Tab` to walk it |
+| `Tab` on a real command | leaves it alone — `ll` stays `ll`, even though `llcstat-bpfcc` starts the same way |
 | `Ctrl-W` | delete one path segment (not the whole argument) |
 | `Ctrl-X Ctrl-E` | open the half-written command in nvim; `:wq` runs it |
 | `Ctrl-A` / `Ctrl-E` | start / end of line |
@@ -180,6 +181,14 @@ The cost is that plain `Up` mixes their commands in, which the prefix search on
 **`bindkey -e` is explicit.** zsh picks vi mode when `$EDITOR` matches `*vi*`,
 and `$EDITOR` here is `nvim`. Without that line the command line starts in
 normal mode. `bindkey -v` in `local.zsh` gets vi mode on purpose.
+
+**`rec_exact` is on.** A word that is already a command wins over the longer
+commands that start with it. Without it `ll` is ambiguous — it is an alias here
+*and* the start of `llcstat-bpfcc`, `lldb` and others — so the second `Tab`
+(harmless in bash, where `Tab Tab` only lists) inserts the first candidate and a
+single `Enter` runs it. Typing `ll` that way once started a BPF profiler.
+Completion is unaffected where there is no exact match: `llc<Tab>` still finds
+`llcstat-bpfcc`.
 
 **`cat` is not aliased to bat.** Too much muscle memory and too many pipes. `bat`
 is its own command, and `MANPAGER` uses it.

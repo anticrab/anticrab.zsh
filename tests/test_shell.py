@@ -137,6 +137,41 @@ class CompletionTest(ZshTestCase):
         self.assertIn("use-cache", self.out("zstyle -L | grep use-cache"))
 
 
+class CompletionSafetyTest(ZshTestCase):
+    """Tab must never turn a command that exists into a longer one.
+
+    `ll` is an alias here and also the prefix of llcstat-bpfcc, lldb and others.
+    With auto_menu the second Tab — a bash habit, where Tab Tab only lists —
+    inserts the first candidate, and a single Enter then runs it. That is how a
+    plain `ll` once started a BPF profiler. rec_exact makes the exact match win.
+    """
+
+    def setUp(self):
+        super().setUp()
+        binaries = self.home / "bin"
+        binaries.mkdir(parents=True, exist_ok=True)
+        for name in ("zzalpha", "zzbeta"):
+            script = binaries / name
+            script.write_text(f"#!/bin/sh\necho RAN-{name}\n")
+            script.chmod(0o755)
+        (self.home / ".config/zsh/local.zsh").write_text(
+            f"alias zz='print RAN-ALIAS'\npath+=({binaries})\n")
+
+    def test_double_tab_then_enter_keeps_the_command_that_was_typed(self):
+        out = self.pty_keys(b"zz\t\t\rexit\n")
+        self.assertIn("RAN-ALIAS", out)
+        self.assertNotIn("RAN-zzalpha", out)
+
+    def test_single_tab_then_enter_keeps_the_command_that_was_typed(self):
+        out = self.pty_keys(b"zz\t\rexit\n")
+        self.assertIn("RAN-ALIAS", out)
+        self.assertNotIn("RAN-zzalpha", out)
+
+    def test_completion_still_completes_when_there_is_no_exact_match(self):
+        out = self.pty_keys(b"zza\t\rexit\n")
+        self.assertIn("RAN-zzalpha", out)
+
+
 class KeysTest(ZshTestCase):
     def test_emacs_keymap_despite_nvim_being_the_editor(self):
         self.assertEqual(self.out("print -r -- $EDITOR"), "nvim")

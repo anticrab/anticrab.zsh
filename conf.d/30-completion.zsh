@@ -38,6 +38,14 @@ setopt always_to_end     # … and leaves the cursor after the completion
 setopt auto_menu         # a second Tab opens the menu
 unsetopt menu_complete   # but the first Tab never inserts a guess blindly
 
+# A word that is already a command wins, even when longer commands start with
+# it. Without this, `ll` — an alias here, and also the start of llcstat-bpfcc,
+# lldb and others — is ambiguous, so the second Tab (harmless in bash, where
+# Tab Tab only lists) inserts the first candidate and one Enter runs it. That is
+# how typing `ll` once started a BPF profiler. Completion still completes when
+# there is no exact match: `llc<Tab>` finds llcstat-bpfcc as before.
+setopt rec_exact
+
 zstyle ':completion:*' menu select
 # case-insensitive first, then partial words, then substrings: `cd Pro<Tab>`
 # finds projects, `cd a.nv<Tab>` finds anticrab.nvim.

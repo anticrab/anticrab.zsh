@@ -57,6 +57,10 @@ means a typo or something not installed.
 | `Shift-Tab` | walk it backwards |
 | `Ctrl-C` | leave the menu |
 
+A command that already exists is never replaced by a longer one: `ll<Tab>` stays
+`ll`, even though `llcstat-bpfcc` and `lldb` start the same way. To reach those,
+type enough to be unambiguous: `llc<Tab>`.
+
 Case-insensitive and substring-aware: `cd Pro<Tab>` finds `projects`,
 `cd a.nv<Tab>` finds `anticrab.nvim`. Try `git <Tab>`, `git checkout <Tab>`,
 `ssh <Tab>`, `docker <Tab>`, `kill <Tab>`, `systemctl <Tab>` — the descriptions

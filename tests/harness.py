@@ -65,13 +65,25 @@ class ZshTestCase(unittest.TestCase):
         itself, so assertions should look for a marker the typed line does not
         already contain.
         """
+        keys = "".join(f"{line}\n" for line in [*commands, "exit"]).encode()
+        return self.pty_keys(keys, cwd=cwd, env=env, timeout=timeout, settle=0)
+
+    def pty_keys(self, keys, cwd=None, env=None, timeout=20, settle=1.5):
+        """Send raw bytes to an interactive zsh on a pty; return all output.
+
+        `settle` waits for the first prompt before typing. Anything involving Tab
+        needs it: the line editor has to be running for a keystroke to mean
+        something other than a literal character.
+        """
         import pty
         master, slave = pty.openpty()
         proc = subprocess.Popen([self.zsh_bin, "-i"],
                                 stdin=slave, stdout=slave, stderr=slave,
                                 env=env or self.env, cwd=cwd, close_fds=True)
         os.close(slave)
-        os.write(master, "".join(f"{line}\n" for line in [*commands, "exit"]).encode())
+        if settle:
+            time.sleep(settle)
+        os.write(master, keys)
 
         chunks, deadline = [], time.time() + timeout
         while time.time() < deadline:
@@ -91,6 +103,7 @@ class ZshTestCase(unittest.TestCase):
             proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
             proc.kill()
+            proc.wait(timeout=5)
         os.close(master)
         return b"".join(chunks).decode(errors="replace")
 
