@@ -102,6 +102,20 @@ print -l *(om[1,3])     # three newest, one per line
 Arguments that merely look like globs are safe: `git show HEAD^`,
 `pip install 'foo[bar]'`, `curl 'u?a=b'` behave as in bash.
 
+## Projects and containers
+
+| Command | Does |
+|---|---|
+| `m` | pick a target from this project's Makefile and run it |
+| `m up` | plain `make up`, works from any subdirectory |
+| `dex` | pick a running container, get a shell inside |
+| `dex rms-postgres` | straight into that one |
+| `dlog` | follow a container's logs |
+
+`m` is the answer to "was it `exec`, `in` or `attach` in this project" — you see
+the list instead of remembering it. For docker itself use `Tab`: `docker <Tab>`
+shows subcommands with descriptions, `docker exec <Tab>` shows your containers.
+
 ## Aliases
 
 | Alias | Runs |

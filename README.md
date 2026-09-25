@@ -9,9 +9,13 @@ repo" rule.
 Tested on Ubuntu 24.04 + zsh 5.9 + WezTerm + tmux 3.4.
 
 No framework. No oh-my-zsh, no plugin manager, no prompt engine: about 500 lines
-of zsh that can be read in one sitting, plus four apt packages. Start-up cost is
-a test, not a hope — the suite fails if the config adds more than 60 ms to a bare
-`zsh -f`.
+of zsh that can be read in one sitting, plus four apt packages.
+
+Start-up cost is a test, not a hope: about **54 ms** per shell, and the suite
+fails if that passes 75. Most of it is not ours to spend — 12-14 ms is
+zsh-syntax-highlighting parsing itself, 5 ms `compinit` against a cached dump,
+4 ms hashing `$PATH`, 4 ms zsh-autosuggestions. oh-my-zsh, for comparison, costs
+200-400 ms, and on this machine a shell start is a tmux pane.
 
 ## Install
 
@@ -123,6 +127,36 @@ ls -d *(/) | wc -l
 
 `nomatch` is off, so `git show HEAD^` and `pip install 'foo[bar]'` still pass
 through literally the way they do in bash.
+
+## Projects and containers
+
+Four docker projects on this machine name the same action four different ways —
+`make exec` in fmr-sim, `make in` in retrofit_amr and ros2-sim, `make attach` in
+rms-test — and only two of the four Makefiles have a `help` target. So there is
+one command that never has to be remembered per project:
+
+| Command | Does |
+| --- | --- |
+| `m` | list this project's Makefile targets and run the chosen one |
+| `m up` | plain `make up`, from anywhere in the project |
+| `dex` | pick a running container and get a shell in it |
+| `dex rms` | the same, by name |
+| `dlog` | follow a container's logs |
+
+`m` finds the Makefile by walking up from `$PWD`, shows the `##` descriptions
+where a Makefile has them and bare target names where it does not, and puts the
+command it ran into the history so `Up` repeats it. Without fzf it prints the
+list, which is still a better `make help`. Parsing is done in zsh rather than
+with awk: Ubuntu's awk is mawk, whose `match()` has no capture groups.
+
+`dex` asks for `bash` and falls back to `sh`, because a mosquitto or postgres
+image has no bash and docker's own error for that is unhelpful. A single running
+container is chosen outright, several are offered as a list.
+
+There is deliberately **no wrapper around docker itself**. zsh's completion
+already covers it: `docker <Tab>` lists the subcommands with descriptions and
+`docker exec <Tab>` lists the running containers by name. A second vocabulary on
+top of docker's own would be one more thing to remember, not one less.
 
 ## The prompt
 
