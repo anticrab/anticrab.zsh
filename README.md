@@ -127,13 +127,13 @@ through literally the way they do in bash.
 ## The prompt
 
 ```
-~/projects/anticrab.nvim   main ✚2 ?1 ⇡1                           1.4s
+~/projects/anticrab.nvim   main +2 ?1 ↑1                           1.4s
 ❯ git commit -m "fix(ui): count means real lines"
 ```
 
 * path, shortened from the left to half the window;
 * branch, or the short object id when HEAD is detached;
-* `✚N` changed tracked files, `?N` untracked, `⇡N`/`⇣N` ahead/behind upstream;
+* `+N` changed tracked files, `?N` untracked, `↑N`/`↓N` ahead/behind upstream;
 * elapsed time of the previous command, right-aligned, only when it took a
   second or more;
 * `❯` is red when the previous command failed.
@@ -156,7 +156,29 @@ Knobs (put them in `local.zsh`):
 ```zsh
 ANTICRAB_ZSH_GIT_DIRTY=0        # drop the file counts, keep the branch
 ANTICRAB_ZSH_SLOW_SECONDS=5     # only time commands slower than 5 s
-ANTICRAB_ZSH_COLORS[path]='#c87dbb'
+ANTICRAB_ZSH_COLORS[path]=5     # another palette slot — or '#c87dbb' for a colour
+```
+
+### Colours and glyphs
+
+Nothing here defines a colour. The prompt, the completion menu, fzf and the
+syntax highlighting all name **palette slots** — `4` is blue, `8` grey, `11`
+yellow, `1` red — and the sixteen are defined once, in
+`anticrab.wezterm/wezterm.lua`. Change the palette there and everything follows;
+copying the values here is how a terminal ends up looking like two themes at
+once. Four colours have no slot and are written out: the fzf selection
+background and border, the ghost-text grey, and the keyword orange JetBrains
+uses for `if`/`for`/`while`. A test asserts that each of those four still exists
+in `wezterm.lua` or in jb.nvim, so none of them can be invented here.
+
+The glyphs are chosen the same way. `+ ? ↑ ↓ … ❯` are all drawn by JetBrainsMono
+Nerd Font itself; wezterm silently falls back to DejaVu Sans Mono for anything
+the font lacks, which keeps the cell width but drops another typeface's stroke
+weight into the middle of a line — `✚` (U+271A) and the double arrows `⇡`/`⇣`
+did exactly that and looked smudged beside the digits. Before using a new glyph:
+
+```bash
+wezterm ls-fonts --text '★'      # the font it names must be JetBrainsMono
 ```
 
 ## Deliberate choices

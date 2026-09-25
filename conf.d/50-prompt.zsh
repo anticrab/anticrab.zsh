@@ -1,6 +1,6 @@
 # The prompt:
 #
-#   ~/projects/anticrab.nvim   main ✚2 ⇡1                             1.4s
+#   ~/projects/anticrab.nvim   main +2 ?1 ↑1                          1.4s
 #   ❯ git commit -m "fix(ui): count means real lines"
 #
 # Both lines are $PROMPT, reassigned by the precmd hook at the bottom. Printing
@@ -11,21 +11,41 @@
 # Assigning $PROMPT also means prompt_subst is not needed: with prompt_subst the
 # text substituted from a variable is *not* rescanned for prompt escapes, which
 # is the usual reason a hand-rolled prompt shows a literal %F{...}.
+#
+# Every glyph below is one JetBrainsMono Nerd Font draws itself. That is not a
+# detail: wezterm silently falls back to DejaVu Sans Mono for what the font
+# lacks, and the substitute keeps the cell width but brings another typeface's
+# stroke weight into a line of otherwise uniform text. U+271A HEAVY GREEK CROSS
+# and U+21E1/U+21E3 (the double arrows) were all fallbacks and looked smudged
+# beside the digits; + ? ↑ ↓ … and ❯ are native. Check any replacement with:
+#     wezterm ls-fonts --text '<glyph>'   # the font named must be JetBrainsMono
 
 zmodload zsh/datetime   # $EPOCHREALTIME — timing without forking date
 autoload -Uz add-zsh-hook
 
-# JetBrains Dark, the same values as anticrab.wezterm/wezterm.lua:55-56.
+# Palette slots, not colour values. The sixteen are defined once, in
+# anticrab.wezterm/wezterm.lua:55-56 (JetBrains Dark); naming the slot means this
+# prompt follows a change there instead of quietly drifting from it, and it still
+# reads correctly on a console with no true colour.
+#
+#   0-7  ansi     black red green yellow blue magenta cyan white
+#   8-15 brights  same order
+#
+#   4  #57a8f5 blue    11  #f2c55c yellow    7  #bcbec4 white
+#   8  #6f737a grey    10  #73bd79 green     1  #f75464 red
+#   9  #ff6b68 bright red
+#
+# A hex value still works here if you want one: ANTICRAB_ZSH_COLORS[path]='#c87dbb'
 typeset -gA ANTICRAB_ZSH_COLORS=(
-    path   '#57a8f5'
-    branch '#6f737a'
-    dirty  '#f2c55c'
-    extra  '#6f737a'
-    ahead  '#73bd79'
-    behind '#ff6b68'
-    time   '#6f737a'
-    ok     '#bcbec4'
-    error  '#f75464'
+    path   4    # blue
+    branch 8    # grey
+    dirty  11   # yellow
+    extra  8    # grey
+    ahead  10   # green
+    behind 9    # bright red
+    time   8    # grey
+    ok     7    # white
+    error  1    # red
 )
 
 # 0 stops asking git for the file counts: one fork per prompt, ~10 ms on a repo
@@ -144,10 +164,10 @@ __anticrab_context() {
         if __anticrab_git_head "$root"; then
             __anticrab_field branch "$REPLY"
             if (( ANTICRAB_ZSH_GIT_DIRTY )) && __anticrab_git_counts; then
-                (( _anticrab_git[changed] ))   && __anticrab_field dirty  "✚${_anticrab_git[changed]}"
+                (( _anticrab_git[changed] ))   && __anticrab_field dirty  "+${_anticrab_git[changed]}"
                 (( _anticrab_git[untracked] )) && __anticrab_field extra  "?${_anticrab_git[untracked]}"
-                (( _anticrab_git[ahead] ))     && __anticrab_field ahead  "⇡${_anticrab_git[ahead]}"
-                (( _anticrab_git[behind] ))    && __anticrab_field behind "⇣${_anticrab_git[behind]}"
+                (( _anticrab_git[ahead] ))     && __anticrab_field ahead  "↑${_anticrab_git[ahead]}"
+                (( _anticrab_git[behind] ))    && __anticrab_field behind "↓${_anticrab_git[behind]}"
             fi
         fi
     fi

@@ -30,11 +30,14 @@ if (( $+commands[fzf] )); then
     # Recoloured to JetBrains Dark; fzf's own defaults bring green and magenta
     # that clash with everything else on screen. bg:-1 keeps the terminal
     # background, including its transparency.
+    # Palette slots, like the prompt — see 50-prompt.zsh for the table. bg:-1 and
+    # gutter:-1 keep the terminal's own background, transparency included. Two
+    # values have no slot: the selection background and the border, both taken
+    # from the JetBrains theme.
     export FZF_DEFAULT_OPTS='--height=40% --layout=reverse --border=rounded --info=inline
-        --color=bg:-1,gutter:-1,bg+:#2b2d30,fg:#bcbec4,fg+:#dfe1e5
-        --color=hl:#f2c55c,hl+:#f2c55c,pointer:#57a8f5,marker:#73bd79
-        --color=prompt:#57a8f5,spinner:#57a8f5,info:#6f737a,header:#6f737a
-        --color=border:#393b40'
+        --color=bg:-1,gutter:-1,fg:7,fg+:15,hl:11,hl+:11
+        --color=pointer:4,marker:10,prompt:4,spinner:4,info:8,header:8
+        --color=bg+:#2b2d30,border:#393b40'
     export FZF_CTRL_R_OPTS='--preview "echo {}" --preview-window=down:3:wrap:hidden
         --bind "ctrl-/:toggle-preview"'
 
@@ -80,22 +83,25 @@ fi
 if [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
     ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
     typeset -gA ZSH_HIGHLIGHT_STYLES
-    ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#f75464'        # typo, red before Enter
-    ZSH_HIGHLIGHT_STYLES[command]='fg=#57a8f5'
-    ZSH_HIGHLIGHT_STYLES[builtin]='fg=#57a8f5'
-    ZSH_HIGHLIGHT_STYLES[function]='fg=#57a8f5'
-    ZSH_HIGHLIGHT_STYLES[alias]='fg=#57a8f5'
-    ZSH_HIGHLIGHT_STYLES[precommand]='fg=#57a8f5,italic'    # sudo, command, exec
+    # Palette slots again, so the command line is coloured by the same sixteen as
+    # everything else. The one exception is the keyword orange, which JetBrains
+    # uses for if/for/while and which has no ANSI slot.
+    ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=1'              # typo, red before Enter
+    ZSH_HIGHLIGHT_STYLES[command]='fg=4'
+    ZSH_HIGHLIGHT_STYLES[builtin]='fg=4'
+    ZSH_HIGHLIGHT_STYLES[function]='fg=4'
+    ZSH_HIGHLIGHT_STYLES[alias]='fg=4'
+    ZSH_HIGHLIGHT_STYLES[precommand]='fg=4,italic'          # sudo, command, exec
     ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=#cf8e6d'        # if, for, while
-    ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#6aab73'
-    ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#6aab73'
-    ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=#6aab73'
-    ZSH_HIGHLIGHT_STYLES[comment]='fg=#6f737a'
-    ZSH_HIGHLIGHT_STYLES[globbing]='fg=#f2c55c'
-    ZSH_HIGHLIGHT_STYLES[redirection]='fg=#c87dbb'
-    ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=#c87dbb'
-    ZSH_HIGHLIGHT_STYLES[path]='fg=#bcbec4'
-    ZSH_HIGHLIGHT_STYLES[default]='fg=#bcbec4'
+    ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=2'
+    ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=2'
+    ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=2'
+    ZSH_HIGHLIGHT_STYLES[comment]='fg=8'
+    ZSH_HIGHLIGHT_STYLES[globbing]='fg=11'
+    ZSH_HIGHLIGHT_STYLES[redirection]='fg=5'
+    ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=5'
+    ZSH_HIGHLIGHT_STYLES[path]='fg=7'
+    ZSH_HIGHLIGHT_STYLES[default]='fg=7'
     source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 

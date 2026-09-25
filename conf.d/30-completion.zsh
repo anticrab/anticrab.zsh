@@ -53,8 +53,9 @@ zstyle ':completion:*' matcher-list \
     'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' group-name ''
-zstyle ':completion:*:descriptions' format '%F{#6f737a}%d%f'
-zstyle ':completion:*:warnings'     format '%F{#f75464}no matches%f'
+# Slots 8 (grey) and 1 (red) of the terminal palette — see 50-prompt.zsh.
+zstyle ':completion:*:descriptions' format '%F{8}%d%f'
+zstyle ':completion:*:warnings'     format '%F{1}no matches%f'
 zstyle ':completion:*' squeeze-slashes true
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/compcache"

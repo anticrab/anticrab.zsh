@@ -205,8 +205,11 @@ class FzfTest(ZshTestCase):
         self.assertIn("fzf-file-widget", out)
         self.assertIn("fzf-cd-widget", out)
 
-    def test_colours_are_the_jetbrains_palette(self):
-        self.assertIn("#57a8f5", self.out("print -r -- $FZF_DEFAULT_OPTS"))
+    def test_colours_follow_the_terminal_palette(self):
+        opts = self.out("print -r -- $FZF_DEFAULT_OPTS")
+        self.assertIn("pointer:4", opts)      # the palette's blue, not a copy of it
+        self.assertIn("bg:-1", opts)          # keep the terminal background …
+        self.assertIn("gutter:-1", opts)      # … transparency included
 
 
 class ToolsTest(ZshTestCase):

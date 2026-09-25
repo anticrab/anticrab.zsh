@@ -118,18 +118,23 @@ Arguments that merely look like globs are safe: `git show HEAD^`,
 ## The prompt
 
 ```
-~/projects/anticrab.nvim   main ✚2 ?1 ⇡1                           1.4s
+~/projects/anticrab.nvim   main +2 ?1 ↑1                           1.4s
 ❯ git commit -m "…"
 ```
 
 | Field | Means |
 |---|---|
 | `main` | branch, or a short object id when HEAD is detached |
-| `✚2` | changed tracked files, staged or not |
+| `+2` | changed tracked files, staged or not |
 | `?1` | untracked files |
-| `⇡1` / `⇣1` | commits ahead of / behind upstream |
+| `↑1` / `↓1` | commits ahead of / behind upstream |
 | `1.4s` | the previous command took that long (shown from 1 s up) |
 | red `❯` | the previous command failed |
+
+Colours come from the terminal palette by slot number, so changing the theme in
+`anticrab.wezterm/wezterm.lua` changes the prompt too. Glyphs are limited to ones
+JetBrainsMono Nerd Font draws itself — check a new one with
+`wezterm ls-fonts --text '<glyph>'`.
 
 ## Escape hatches
 
