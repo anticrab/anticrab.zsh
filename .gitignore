@@ -1,0 +1,11 @@
+# Editor / OS junk
+.DS_Store
+*.swp
+*~
+
+# Python bytecode from tests
+__pycache__/
+*.pyc
+
+# Local Claude Code workspace — specs, plans, settings. Never committed.
+.claude/
